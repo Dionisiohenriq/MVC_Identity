@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -25,7 +26,6 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireNonAlphanumeric = false;
 });
 
-builder.Services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                     .AddCookie(options =>
                     {
@@ -33,7 +33,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                         options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
                         options.SlidingExpiration = true;
                     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireUserAdminGerenteRole",
+    policy => policy.RequireRole("User", "Admin", "Gerente"));
+
+});
 
 
 var app = builder.Build();
@@ -52,9 +57,19 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-await CreateRoleUsersAsync(app);
 
 app.UseAuthorization();
+
+await CreateRoleUsersAsync(app);
+
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+      name: "areas",
+      pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}"
+    );
+});
 
 app.MapControllerRoute(
     name: "default",
@@ -63,7 +78,8 @@ app.MapControllerRoute(
 app.Run();
 
 
-async Task CreateRoleUsersAsync(WebApplication app){
+async Task CreateRoleUsersAsync(WebApplication app)
+{
     var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
     using (var scope = scopedFactory.CreateScope())
     {

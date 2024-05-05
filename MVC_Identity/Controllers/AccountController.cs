@@ -73,4 +73,10 @@ public class AccountController : Controller
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
     }
+
+    [HttpGet("/Account/AccessDenied")]
+    public async Task<IActionResult> AccessDenied()
+    {
+        return View();
+    }
 }

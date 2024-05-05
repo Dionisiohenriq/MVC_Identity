@@ -17,12 +17,15 @@ public class LionsController : Controller
     }
 
     // GET: Lions
+    [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
         return View(await _context.Lions.ToListAsync());
     }
 
     // GET: Lions/Details/5
+    //[Authorize(Roles = "Admin, Gerente, User")]
+    [Authorize(Policy = "RequireUserAdminGerenteRole")]
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null) return NotFound();
@@ -35,6 +38,8 @@ public class LionsController : Controller
     }
 
     // GET: Lions/Create
+    //[Authorize(Roles = "Admin, Gerente, User")]
+    [Authorize(Policy = "RequireUserAdminGerenteRole")]
     public IActionResult Create()
     {
         return View();
@@ -45,6 +50,8 @@ public class LionsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
+    //[Authorize(Roles = "Admin, Gerente, User")]
+    [Authorize(Policy = "RequireUserAdminGerenteRole")]
     public async Task<IActionResult> Create([Bind("BirthPlace,Id,Name,Specie,Age")] Lion lion)
     {
         if (ModelState.IsValid)
@@ -58,6 +65,7 @@ public class LionsController : Controller
     }
 
     // GET: Lions/Edit/5
+    [Authorize(Roles = "Admin, Gerente")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
@@ -72,6 +80,7 @@ public class LionsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin, Gerente")]
     public async Task<IActionResult> Edit(int id, [Bind("BirthPlace,Id,Name,Specie,Age")] Lion lion)
     {
         if (id != lion.Id) return NotFound();
@@ -97,6 +106,7 @@ public class LionsController : Controller
     }
 
     // GET: Lions/Delete/5
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null) return NotFound();
@@ -112,6 +122,7 @@ public class LionsController : Controller
     [HttpPost]
     [ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var lion = await _context.Lions.FindAsync(id);

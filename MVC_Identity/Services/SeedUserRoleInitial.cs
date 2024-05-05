@@ -16,6 +16,8 @@ namespace MVC_Identity.Services
 
         public async Task SeedRolesAsync()
         {
+
+
             if (!await _roleManager.RoleExistsAsync("User"))
             {
                 IdentityRole role = new IdentityRole();
@@ -23,7 +25,7 @@ namespace MVC_Identity.Services
                 role.NormalizedName = "USER";
                 role.ConcurrencyStamp = Guid.NewGuid().ToString();
 
-                _roleManager.CreateAsync(role);
+                await _roleManager.CreateAsync(role);
             }
 
             if (!await _roleManager.RoleExistsAsync("Admin"))
@@ -33,7 +35,7 @@ namespace MVC_Identity.Services
                 role.NormalizedName = "ADMIN";
                 role.ConcurrencyStamp = Guid.NewGuid().ToString();
 
-                _roleManager.CreateAsync(role);
+                await _roleManager.CreateAsync(role);
             }
 
             if (!await _roleManager.RoleExistsAsync("Gerente"))
@@ -43,7 +45,7 @@ namespace MVC_Identity.Services
                 role.NormalizedName = "GERENTE";
                 role.ConcurrencyStamp = Guid.NewGuid().ToString();
 
-                _roleManager.CreateAsync(role);
+                await _roleManager.CreateAsync(role);
             }
         }
 
@@ -62,7 +64,8 @@ namespace MVC_Identity.Services
 
                 IdentityResult result = await _userManager.CreateAsync(user, "Teste@2024");
 
-                if(result.Succeeded){
+                if (result.Succeeded)
+                {
                     await _userManager.AddToRoleAsync(user, "Admin");
                 }
             }
@@ -80,10 +83,31 @@ namespace MVC_Identity.Services
 
                 IdentityResult result = await _userManager.CreateAsync(user, "Teste@2024");
 
-                if(result.Succeeded){
+                if (result.Succeeded)
+                {
                     await _userManager.AddToRoleAsync(user, "Gerente");
                 }
             }
+
+            if (await _userManager.FindByEmailAsync("user@localhost") == null)
+            {
+                IdentityUser user = new IdentityUser();
+                user.UserName = "user@localhost";
+                user.Email = "user@localhost";
+                user.NormalizedUserName = "USER@LOCALHOST";
+                user.NormalizedEmail = "USER@LOCALHOST";
+                user.EmailConfirmed = true;
+                user.LockoutEnabled = false;
+                user.SecurityStamp = Guid.NewGuid().ToString();
+
+                IdentityResult result = await _userManager.CreateAsync(user, "Teste@2024");
+
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                }
+            }
+
         }
     }
 }
