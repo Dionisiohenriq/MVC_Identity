@@ -17,14 +17,14 @@ namespace MVC_Identity.Context
                 new Lion
 
                 {
-                    Id = 1,
+                    Id = Guid.NewGuid(),
                     Name = "Ahura Mazda",
                     Specie = "Leão Africano",
                     Age = 5,
                     BirthPlace = "África"
                 });
 
-            modelBuilder.Entity<Animal>().Property(p => p.Age).IsRequired();
+            modelBuilder.ApplyConfiguration(new Animal());
 
         }
 
@@ -37,7 +37,7 @@ namespace MVC_Identity.Context
                     .AddJsonFile("appsettings.json")
                     .Build();
 
-                string connectionString = config.GetConnectionString("DefaultConnection");
+                string? connectionString = config.GetConnectionString("DefaultConnection");
                 optionsBuilder.UseSqlServer(connectionString);
             }
         }

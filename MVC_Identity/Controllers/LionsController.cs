@@ -26,7 +26,7 @@ public class LionsController : Controller
     // GET: Lions/Details/5
     //[Authorize(Roles = "Admin, Gerente, User")]
     [Authorize(Policy = "RequireUserAdminGerenteRole")]
-    public async Task<IActionResult> Details(int? id)
+    public async Task<IActionResult> Details(Guid? id)
     {
         if (id == null) return NotFound();
 
@@ -81,7 +81,7 @@ public class LionsController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin, Gerente")]
-    public async Task<IActionResult> Edit(int id, [Bind("BirthPlace,Id,Name,Specie,Age")] Lion lion)
+    public async Task<IActionResult> Edit(Guid id, [Bind("BirthPlace,Id,Name,Specie,Age")] Lion lion)
     {
         if (id != lion.Id) return NotFound();
 
@@ -107,7 +107,7 @@ public class LionsController : Controller
 
     // GET: Lions/Delete/5
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Delete(int? id)
+    public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null) return NotFound();
 
@@ -132,7 +132,7 @@ public class LionsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private bool LionExists(int id)
+    private bool LionExists(Guid id)
     {
         return _context.Lions.Any(e => e.Id == id);
     }

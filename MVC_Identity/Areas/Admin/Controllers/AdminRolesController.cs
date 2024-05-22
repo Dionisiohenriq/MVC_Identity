@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MVC_Identity.Areas.Admin.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace MVC_Identity.Areas.Admin.Controllers
 {
+
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminRolesController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -16,9 +20,6 @@ namespace MVC_Identity.Areas.Admin.Controllers
             _roleManager = roleManager;
             _userManager = userManager;
         }
-
-        [Area("Admin")]
-        [Authorize(Roles = "Admin")]
         public ViewResult Index() => View(_roleManager.Roles);
 
         public IActionResult Create() => View();
@@ -48,7 +49,9 @@ namespace MVC_Identity.Areas.Admin.Controllers
             List<IdentityUser> members = new List<IdentityUser>();
             List<IdentityUser> nonMembers = new List<IdentityUser>();
 
-            foreach (var user in _userManager.Users)
+            var users = await _userManager.Users.ToListAsync();
+
+            foreach (IdentityUser? user in users)
             {
                 List<IdentityUser> list = await _userManager.IsInRoleAsync(user, role.Name) ? members : nonMembers;
                 list.Add(user);
