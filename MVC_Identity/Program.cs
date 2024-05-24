@@ -48,6 +48,9 @@ builder.Services.AddAuthorization(options =>
     {
         policy.Requirements.Add(new TempoCadastroRequirement(5));
     });
+
+    options.AddPolicy("TesteClaim",
+        policy => policy.RequireClaim("Teste", "teste_claim"));
 });
 
 
