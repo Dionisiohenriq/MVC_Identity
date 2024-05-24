@@ -17,6 +17,7 @@ namespace MVC_Identity.Entities
 
         public Animal()
         {
+            Id = Guid.NewGuid();
         }
 
         public void Delete()
@@ -27,7 +28,7 @@ namespace MVC_Identity.Entities
         public virtual void Configure(EntityTypeBuilder<Animal> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).IsRequired().UseIdentityColumn();
+            builder.Property(x => x.Id).IsRequired();
             builder.Property(p => p.Age).IsRequired();
             builder.Property(n => n.Name).IsRequired().HasMaxLength(80);
 

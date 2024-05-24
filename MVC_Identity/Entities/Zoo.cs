@@ -10,10 +10,15 @@ namespace MVC_Identity.Entities
         public string? Description { get; private set; }
         public DateTime Agenda { get; private set; }
 
+        public Zoo()
+        {
+            Id = Guid.NewGuid();
+        }
+
         public void Configure(EntityTypeBuilder<Zoo> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).IsRequired().UseIdentityColumn();
+            builder.Property(x => x.Id).IsRequired();
             builder.Property(x => x.Name).IsRequired();
         }
     }

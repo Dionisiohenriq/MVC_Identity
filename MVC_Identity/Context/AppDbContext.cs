@@ -8,10 +8,14 @@ namespace MVC_Identity.Context
     {
         public DbSet<Animal> Animals { get; set; }
         public DbSet<Lion> Lions { get; set; }
+        public DbSet<Zoo> Zoos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new Animal());
+            modelBuilder.ApplyConfiguration(new Lion());
+            modelBuilder.ApplyConfiguration(new Zoo());
+
 
             modelBuilder.Entity<Lion>().HasData(
                 new Lion
@@ -24,8 +28,8 @@ namespace MVC_Identity.Context
                     BirthPlace = "África"
                 });
 
-            modelBuilder.ApplyConfiguration(new Animal());
 
+            base.OnModelCreating(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MVC_Identity.Context;
+using MVC_Identity.Policies;
 using MVC_Identity.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +18,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IAuthorizationHandler, TempoCadastroHandler>();
 builder.Services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
+builder.Services.AddScoped<ISeedUserClaimsInitial, SeedUserClaimsInitial>();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -37,6 +41,13 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireUserAdminGerenteRole", policy => policy.RequireRole("User", "Admin", "Gerente"));
     options.AddPolicy("SomenteFuncionario", policy => policy.RequireClaim("FuncionarioNumero"));
+    options.AddPolicy("IsAdminClaimAccess", policy => policy.RequireClaim("IsAdmin", "true"));
+    options.AddPolicy("IsFuncionarioClaimAccess", policy => policy.RequireClaim("IsFuncionario", "true"));
+
+    options.AddPolicy("TempoCadastroMinimo", policy =>
+    {
+        policy.Requirements.Add(new TempoCadastroRequirement(5));
+    });
 });
 
 
@@ -85,5 +96,9 @@ async Task CreateRoleUsersAsync(WebApplication app)
         var service = scope.ServiceProvider.GetService<ISeedUserRoleInitial>();
         await service.SeedRolesAsync();
         await service.SeedUsersAsync();
+
+        var service2 = scope.ServiceProvider.GetService<ISeedUserClaimsInitial>();
+
+        await service2.SeedUserClaimsAsync();
     }
 }

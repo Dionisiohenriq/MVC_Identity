@@ -24,11 +24,9 @@ namespace MVC_Identity.Migrations
 
             modelBuilder.Entity("MVC_Identity.Entities.Animal", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -38,22 +36,45 @@ namespace MVC_Identity.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
+                    b.Property<bool>("Excluded")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
                     b.Property<string>("Specie")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Animals", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Animal");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("MVC_Identity.Entities.Zoo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Agenda")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Animals");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Animal");
-
-                    b.UseTphMappingStrategy();
+                    b.ToTable("Zoos", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -259,20 +280,9 @@ namespace MVC_Identity.Migrations
                     b.HasBaseType("MVC_Identity.Entities.Animal");
 
                     b.Property<string>("BirthPlace")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Lion");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Age = 5,
-                            Name = "Ahura Mazda",
-                            Specie = "Leão Africano",
-                            BirthPlace = "África"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

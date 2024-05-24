@@ -108,6 +108,25 @@ namespace MVC_Identity.Services
                 }
             }
 
+            if (await _userManager.FindByEmailAsync("dionisiohenriq@localhost") == null)
+            {
+                IdentityUser user = new IdentityUser();
+                user.UserName = "dionisiohenriq@localhost";
+                user.Email = "dionisiohenriq@localhost";
+                user.NormalizedUserName = "dionisiohenriq@localhost".ToUpper();
+                user.NormalizedEmail = "dionisiohenriq@localhost".ToUpper();
+                user.EmailConfirmed = true;
+                user.LockoutEnabled = false;
+                user.SecurityStamp = Guid.NewGuid().ToString();
+
+                IdentityResult result = await _userManager.CreateAsync(user, "Teste@2024");
+
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "User");
+                }
+            }
+
         }
     }
 }

@@ -7,9 +7,15 @@ namespace MVC_Identity.Entities
         public string? BirthPlace { get; set; }
         public Lion() : base() { }
 
-        public override void Configure(EntityTypeBuilder<Animal> builder)
+        public Lion(string? birthPlace)
         {
-            base.Configure(builder);
+            BirthPlace = birthPlace;
+        }
+
+        public void Configure(EntityTypeBuilder<Lion> builder)
+        {
+            builder.HasBaseType(typeof(Animal));
+            builder.HasKey(e => e.Id);
         }
     }
 }
