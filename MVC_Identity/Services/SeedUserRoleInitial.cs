@@ -3,55 +3,46 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MVC_Identity.Services
 {
-    public class SeedUserRoleInitial : ISeedUserRoleInitial
+    public class SeedUserRoleInitial(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) : ISeedUserRoleInitial
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-
-        public SeedUserRoleInitial(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
-        {
-            _userManager = userManager;
-            _roleManager = roleManager;
-        }
-
         public async Task SeedRolesAsync()
         {
 
 
-            if (!await _roleManager.RoleExistsAsync("User"))
+            if (!await roleManager.RoleExistsAsync("User"))
             {
                 IdentityRole role = new IdentityRole();
                 role.Name = "User";
                 role.NormalizedName = "USER";
                 role.ConcurrencyStamp = Guid.NewGuid().ToString();
 
-                await _roleManager.CreateAsync(role);
+                await roleManager.CreateAsync(role);
             }
 
-            if (!await _roleManager.RoleExistsAsync("Admin"))
+            if (!await roleManager.RoleExistsAsync("Admin"))
             {
                 IdentityRole role = new IdentityRole();
                 role.Name = "Admin";
                 role.NormalizedName = "ADMIN";
                 role.ConcurrencyStamp = Guid.NewGuid().ToString();
 
-                await _roleManager.CreateAsync(role);
+                await roleManager.CreateAsync(role);
             }
 
-            if (!await _roleManager.RoleExistsAsync("Gerente"))
+            if (!await roleManager.RoleExistsAsync("Gerente"))
             {
                 IdentityRole role = new IdentityRole();
                 role.Name = "Gerente";
                 role.NormalizedName = "GERENTE";
                 role.ConcurrencyStamp = Guid.NewGuid().ToString();
 
-                await _roleManager.CreateAsync(role);
+                await roleManager.CreateAsync(role);
             }
         }
 
         public async Task SeedUsersAsync()
         {
-            if (await _userManager.FindByEmailAsync("admin@localhost") == null)
+            if (await userManager.FindByEmailAsync("admin@localhost") == null)
             {
                 IdentityUser user = new IdentityUser();
                 user.UserName = "admin@localhost";
@@ -62,15 +53,15 @@ namespace MVC_Identity.Services
                 user.LockoutEnabled = false;
                 user.SecurityStamp = Guid.NewGuid().ToString();
 
-                IdentityResult result = await _userManager.CreateAsync(user, "Teste@2024");
+                IdentityResult result = await userManager.CreateAsync(user, "Teste@2024");
 
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "Admin");
+                    await userManager.AddToRoleAsync(user, "Admin");
                 }
             }
 
-            if (await _userManager.FindByEmailAsync("gerente@localhost") == null)
+            if (await userManager.FindByEmailAsync("gerente@localhost") == null)
             {
                 IdentityUser user = new IdentityUser();
                 user.UserName = "gerente@localhost";
@@ -81,15 +72,15 @@ namespace MVC_Identity.Services
                 user.LockoutEnabled = false;
                 user.SecurityStamp = Guid.NewGuid().ToString();
 
-                IdentityResult result = await _userManager.CreateAsync(user, "Teste@2024");
+                IdentityResult result = await userManager.CreateAsync(user, "Teste@2024");
 
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "Gerente");
+                    await userManager.AddToRoleAsync(user, "Gerente");
                 }
             }
 
-            if (await _userManager.FindByEmailAsync("user@localhost") == null)
+            if (await userManager.FindByEmailAsync("user@localhost") == null)
             {
                 IdentityUser user = new IdentityUser();
                 user.UserName = "user@localhost";
@@ -100,15 +91,15 @@ namespace MVC_Identity.Services
                 user.LockoutEnabled = false;
                 user.SecurityStamp = Guid.NewGuid().ToString();
 
-                IdentityResult result = await _userManager.CreateAsync(user, "Teste@2024");
+                IdentityResult result = await userManager.CreateAsync(user, "Teste@2024");
 
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "Admin");
+                    await userManager.AddToRoleAsync(user, "Admin");
                 }
             }
 
-            if (await _userManager.FindByEmailAsync("dionisiohenriq@localhost") == null)
+            if (await userManager.FindByEmailAsync("dionisiohenriq@localhost") == null)
             {
                 IdentityUser user = new IdentityUser();
                 user.UserName = "dionisiohenriq@localhost";
@@ -119,11 +110,11 @@ namespace MVC_Identity.Services
                 user.LockoutEnabled = false;
                 user.SecurityStamp = Guid.NewGuid().ToString();
 
-                IdentityResult result = await _userManager.CreateAsync(user, "Teste@2024");
+                IdentityResult result = await userManager.CreateAsync(user, "Teste@2024");
 
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "User");
+                    await userManager.AddToRoleAsync(user, "User");
                 }
             }
 

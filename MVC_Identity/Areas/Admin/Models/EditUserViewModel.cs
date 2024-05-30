@@ -12,7 +12,7 @@ namespace MVC_Identity.Areas.Admin.Models
         public List<Claim>? Claims { get; set; }
         public EditUserViewModel()
         {
-            Claims = new List<Claim>();
+            Claims = [];
         }
     }
 }

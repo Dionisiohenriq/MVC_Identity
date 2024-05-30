@@ -10,17 +10,9 @@ namespace MVC_Identity.Areas.Admin.Controllers
 
     [Area("Admin")]
     [Authorize(Roles = "Admin")]
-    public class AdminRolesController : Controller
+    public class AdminRolesController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager) : Controller
     {
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public AdminRolesController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
-        {
-            _roleManager = roleManager;
-            _userManager = userManager;
-        }
-        public ViewResult Index() => View(_roleManager.Roles);
+        public ViewResult Index() => View(roleManager.Roles);
 
         public IActionResult Create() => View();
 
@@ -32,7 +24,7 @@ namespace MVC_Identity.Areas.Admin.Controllers
                 return View(name);
             }
 
-            IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(name));
+            IdentityResult result = await roleManager.CreateAsync(new IdentityRole(name));
             if (result.Succeeded)
                 return RedirectToAction("Index");
             else
@@ -44,16 +36,16 @@ namespace MVC_Identity.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(string id)
         {
-            IdentityRole? role = await _roleManager.FindByIdAsync(id);
+            IdentityRole? role = await roleManager.FindByIdAsync(id);
 
             List<IdentityUser> members = new List<IdentityUser>();
             List<IdentityUser> nonMembers = new List<IdentityUser>();
 
-            var users = await _userManager.Users.ToListAsync();
+            var users = await userManager.Users.ToListAsync();
 
             foreach (IdentityUser? user in users)
             {
-                List<IdentityUser> list = await _userManager.IsInRoleAsync(user, role.Name) ? members : nonMembers;
+                List<IdentityUser> list = await userManager.IsInRoleAsync(user, role.Name) ? members : nonMembers;
                 list.Add(user);
             }
 
@@ -74,11 +66,11 @@ namespace MVC_Identity.Areas.Admin.Controllers
             {
                 foreach (string userId in model.AddIds ?? new string[] { })
                 {
-                    IdentityUser? user = await _userManager.FindByIdAsync(userId);
+                    IdentityUser? user = await userManager.FindByIdAsync(userId);
 
                     if (user is not null)
                     {
-                        result = await _userManager.AddToRoleAsync(user, model.RoleName);
+                        result = await userManager.AddToRoleAsync(user, model.RoleName);
                         if (!result.Succeeded)
                             Errors(result);
                     }
@@ -86,11 +78,11 @@ namespace MVC_Identity.Areas.Admin.Controllers
 
                 foreach (string userId in model.DeleteIds ?? new string[] { })
                 {
-                    IdentityUser? user = await _userManager.FindByIdAsync(userId);
+                    IdentityUser? user = await userManager.FindByIdAsync(userId);
 
                     if (user is not null)
                     {
-                        result = await _userManager.RemoveFromRoleAsync(user, model.RoleName);
+                        result = await userManager.RemoveFromRoleAsync(user, model.RoleName);
 
                         if (!result.Succeeded)
                             Errors(result);
@@ -106,12 +98,12 @@ namespace MVC_Identity.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(string id)
         {
-            IdentityRole? role = await _roleManager.FindByIdAsync(id);
+            IdentityRole? role = await roleManager.FindByIdAsync(id);
 
             if (role is null)
             {
                 ModelState.AddModelError("", "Role não encontrada!");
-                return View("Index", _roleManager.Roles);
+                return View("Index", roleManager.Roles);
             }
 
             return View(role);
@@ -121,11 +113,11 @@ namespace MVC_Identity.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            IdentityRole? role = await _roleManager.FindByIdAsync(id);
+            IdentityRole? role = await roleManager.FindByIdAsync(id);
 
             if (role is not null)
             {
-                IdentityResult result = await _roleManager.DeleteAsync(role);
+                IdentityResult result = await roleManager.DeleteAsync(role);
 
                 if (result.Succeeded)
                     return RedirectToAction("Index");
@@ -136,7 +128,7 @@ namespace MVC_Identity.Areas.Admin.Controllers
             {
                 ModelState.AddModelError("", "Role não encontrada");
             }
-            return View("Index", _roleManager.Roles);
+            return View("Index", roleManager.Roles);
         }
 
 

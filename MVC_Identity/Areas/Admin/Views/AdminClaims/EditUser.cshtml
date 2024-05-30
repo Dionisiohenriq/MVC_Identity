@@ -41,7 +41,7 @@
                 {
                     <tr>
                         <td>@claim.Value</td>
-                        <td>@claim.ValueType</td>
+                        <td>@claim.Type</td>
                         <td>
                             <form asp-action="DeleteClaim" method="post">
                                 <input type="hidden" name="claimValues" value="@claim.Type;@claim.Value;@Model.Id" />

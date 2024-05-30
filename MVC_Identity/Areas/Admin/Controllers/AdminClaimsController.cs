@@ -8,18 +8,11 @@ namespace MVC_Identity.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Admin")]
-    public class AdminClaimsController : Controller
+    public class AdminClaimsController(UserManager<IdentityUser> userManager) : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public AdminClaimsController(UserManager<IdentityUser> userManager)
-        {
-            _userManager = userManager;
-        }
-
         public IActionResult Index()
         {
-            var users = _userManager.Users;
+            var users = userManager.Users;
 
             return View(users);
         }
@@ -27,7 +20,7 @@ namespace MVC_Identity.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> EditUser(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await userManager.FindByIdAsync(id);
 
             if (user == null)
             {
@@ -35,7 +28,7 @@ namespace MVC_Identity.Areas.Admin.Controllers
                 return View();
             }
 
-            var userClaims = await _userManager.GetClaimsAsync(user);
+            var userClaims = await userManager.GetClaimsAsync(user);
 
             var model = new EditUserViewModel
             {
@@ -51,7 +44,7 @@ namespace MVC_Identity.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
-            var user = await _userManager.FindByIdAsync(model.Id);
+            var user = await userManager.FindByIdAsync(model.Id);
 
             if (user == null)
             {
@@ -63,7 +56,7 @@ namespace MVC_Identity.Areas.Admin.Controllers
                 user.Email = model.Email;
                 user.UserName = model.UserName;
 
-                var result = await _userManager.UpdateAsync(user);
+                var result = await userManager.UpdateAsync(user);
 
                 if (result.Succeeded)
                 {
@@ -92,18 +85,18 @@ namespace MVC_Identity.Areas.Admin.Controllers
                 return View();
             }
 
-            IdentityUser? user = await _userManager.FindByIdAsync(userId);
+            IdentityUser? user = await userManager.FindByIdAsync(userId);
 
             if (user is not null)
             {
-                var userClaims = await _userManager.GetClaimsAsync(user);
+                var userClaims = await userManager.GetClaimsAsync(user);
 
                 Claim? claim = userClaims.FirstOrDefault(t => t.Type.Equals(claimType) && t.Value.Equals(claimValue));
 
                 if (claim is null)
                 {
                     Claim newClaim = new Claim(claimType, claimValue);
-                    IdentityResult result = await _userManager.AddClaimAsync(user, newClaim);
+                    IdentityResult result = await userManager.AddClaimAsync(user, newClaim);
 
                     if (result.Succeeded)
                     {
@@ -135,15 +128,15 @@ namespace MVC_Identity.Areas.Admin.Controllers
             string claimValue = claimValuesArray[1];
             string userId = claimValuesArray[2];
 
-            IdentityUser user = await _userManager.FindByIdAsync(userId);
+            IdentityUser user = await userManager.FindByIdAsync(userId);
 
             if (user is not null)
             {
-                var userClaims = await _userManager.GetClaimsAsync(user);
+                var userClaims = await userManager.GetClaimsAsync(user);
 
                 Claim? claim = userClaims.FirstOrDefault(c => c.Type.Equals(claimType) && c.Value.Equals(claimValue));
 
-                IdentityResult result = await _userManager.RemoveClaimAsync(user, claim);
+                IdentityResult result = await userManager.RemoveClaimAsync(user, claim);
 
                 if (result.Succeeded)
                 {

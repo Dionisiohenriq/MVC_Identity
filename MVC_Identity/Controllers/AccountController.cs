@@ -5,17 +5,8 @@ using MVC_Identity.Models;
 namespace MVC_Identity.Controllers;
 
 
-public class AccountController : Controller
+public class AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> siginInManager) : Controller
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
-
-    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> siginInManager)
-    {
-        _userManager = userManager;
-        _signInManager = siginInManager;
-    }
-
     [HttpGet]
     public IActionResult Register()
     {
@@ -33,10 +24,10 @@ public class AccountController : Controller
                 Email = model.Email
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                _signInManager.SignInAsync(user, false);
+                siginInManager.SignInAsync(user, false);
                 return RedirectToAction("Index", "Home");
             }
 
@@ -57,7 +48,7 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+            var result = await siginInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
 
             if (result.Succeeded) return RedirectToAction("Index", "Home");
 
@@ -70,7 +61,7 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Logout()
     {
-        await _signInManager.SignOutAsync();
+        await siginInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
     }
 

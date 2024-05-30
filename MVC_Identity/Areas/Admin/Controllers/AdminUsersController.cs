@@ -6,26 +6,19 @@ namespace MVC_Identity.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Admin")]
-    public class AdminUsersController : Controller
+    public class AdminUsersController(UserManager<IdentityUser> userManager) : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public AdminUsersController(UserManager<IdentityUser> userManager)
-        {
-            _userManager = userManager;
-        }
-
         [HttpGet]
         public IActionResult Index()
         {
-            IQueryable<IdentityUser> users = _userManager.Users;
+            IQueryable<IdentityUser> users = userManager.Users;
             return View(users);
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            IdentityUser? user = await _userManager.FindByIdAsync(id);
+            IdentityUser? user = await userManager.FindByIdAsync(id);
 
             if (user is null)
             {
@@ -34,7 +27,7 @@ namespace MVC_Identity.Areas.Admin.Controllers
             }
             else
             {
-                IdentityResult result = await _userManager.DeleteAsync(user);
+                IdentityResult result = await userManager.DeleteAsync(user);
 
                 if (result.Succeeded)
                 {

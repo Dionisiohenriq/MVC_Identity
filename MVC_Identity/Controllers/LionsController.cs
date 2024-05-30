@@ -7,20 +7,14 @@ using MVC_Identity.Entities;
 namespace MVC_Identity.Controllers;
 
 [Authorize]
-public class LionsController : Controller
+public class LionsController(AppDbContext context) : Controller
 {
-    private readonly AppDbContext _context;
-
-    public LionsController(AppDbContext context)
-    {
-        _context = context;
-    }
 
     // GET: Lions
     [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
-        return View(await _context.Lions.ToListAsync());
+        return View(await context.Lions.ToListAsync());
     }
 
     // GET: Lions/Details/5
@@ -30,7 +24,7 @@ public class LionsController : Controller
     {
         if (id == null) return NotFound();
 
-        var lion = await _context.Lions
+        var lion = await context.Lions
             .FirstOrDefaultAsync(m => m.Id == id);
         if (lion == null) return NotFound();
 
@@ -56,8 +50,8 @@ public class LionsController : Controller
     {
         if (ModelState.IsValid)
         {
-            _context.Add(lion);
-            await _context.SaveChangesAsync();
+            context.Add(lion);
+            await context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -70,7 +64,7 @@ public class LionsController : Controller
     {
         if (id == null) return NotFound();
 
-        var lion = await _context.Lions.FindAsync(id);
+        var lion = await context.Lions.FindAsync(id);
         if (lion == null) return NotFound();
         return View(lion);
     }
@@ -89,8 +83,8 @@ public class LionsController : Controller
         {
             try
             {
-                _context.Update(lion);
-                await _context.SaveChangesAsync();
+                context.Update(lion);
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -111,7 +105,7 @@ public class LionsController : Controller
     {
         if (id == null) return NotFound();
 
-        var lion = await _context.Lions
+        var lion = await context.Lions
             .FirstOrDefaultAsync(m => m.Id == id);
         if (lion == null) return NotFound();
 
@@ -125,15 +119,15 @@ public class LionsController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var lion = await _context.Lions.FindAsync(id);
-        if (lion != null) _context.Lions.Remove(lion);
+        var lion = await context.Lions.FindAsync(id);
+        if (lion != null) context.Lions.Remove(lion);
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private bool LionExists(Guid id)
     {
-        return _context.Lions.Any(e => e.Id == id);
+        return context.Lions.Any(e => e.Id == id);
     }
 }
